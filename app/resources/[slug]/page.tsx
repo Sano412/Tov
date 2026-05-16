@@ -5,14 +5,12 @@ import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { formatPrice } from "@/lib/format";
 import {
-  formatPrice,
-  getBranchById,
-  getBusinessById,
-  getResourceBySlug,
-  getSimilarResources,
-  resources,
-} from "@/lib/mock-data";
+  getPublicResourceBySlug,
+  getPublicResourceSlugs,
+  getSimilarPublicResources,
+} from "@/lib/public-resources";
 
 type ResourceDetailPageProps = {
   params: Promise<{
@@ -20,9 +18,11 @@ type ResourceDetailPageProps = {
   }>;
 };
 
-export function generateStaticParams() {
-  return resources.map((resource) => ({
-    slug: resource.slug,
+export async function generateStaticParams() {
+  const slugs = await getPublicResourceSlugs();
+
+  return slugs.map((slug) => ({
+    slug,
   }));
 }
 
@@ -30,15 +30,13 @@ export default async function ResourceDetailPage({
   params,
 }: ResourceDetailPageProps) {
   const { slug } = await params;
-  const resource = getResourceBySlug(slug);
+  const resource = await getPublicResourceBySlug(slug);
 
   if (!resource) {
     notFound();
   }
 
-  const branch = getBranchById(resource.branchId);
-  const business = getBusinessById(resource.businessId);
-  const similarResources = getSimilarResources(resource);
+  const similarResources = await getSimilarPublicResources(resource, 3);
 
   return (
     <main>
@@ -68,10 +66,10 @@ export default async function ResourceDetailPage({
                   Салбар
                 </p>
                 <p className="mt-3 text-lg font-black text-tovlo-text">
-                  {branch?.name}
+                  {resource.branch.name}
                 </p>
                 <p className="mt-2 text-sm font-medium text-tovlo-muted">
-                  {branch?.district} · {branch?.address}
+                  {resource.branch.district} · {resource.branch.address}
                 </p>
               </GlassCard>
               <GlassCard>
@@ -82,7 +80,7 @@ export default async function ResourceDetailPage({
                   {resource.capacityMin}-{resource.capacityMax} хүн
                 </p>
                 <p className="mt-2 text-sm font-medium text-tovlo-muted">
-                  {business?.name}
+                  {resource.branch.businessName}
                 </p>
               </GlassCard>
               <GlassCard>
@@ -93,7 +91,7 @@ export default async function ResourceDetailPage({
                   {formatPrice(resource.pricePerHour)}₮ / цаг
                 </p>
                 <p className="mt-2 text-sm font-medium text-tovlo-muted">
-                  Mock price preview
+                  Public price preview
                 </p>
               </GlassCard>
             </div>

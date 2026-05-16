@@ -1,8 +1,10 @@
 import { Header } from "@/components/Header";
+import { ResourceCard } from "@/components/ResourceCard";
 import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { getFeaturedPublicResources } from "@/lib/public-resources";
 
 const searchFields = [
   { label: "Байршил", value: "Улаанбаатар" },
@@ -49,7 +51,9 @@ const resources = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const featuredResources = await getFeaturedPublicResources(6);
+
   return (
     <main>
       <Header />
@@ -136,37 +140,8 @@ export default function Home() {
 
       <SectionShell id="featured" eyebrow="Featured resources" title="Өрөөний товч preview.">
         <div className="grid gap-4 lg:grid-cols-3">
-          {resources.map((resource) => (
-            <GlassCard className="overflow-hidden p-0" key={resource.name}>
-              <div className="h-40 bg-gradient-to-br from-tovlo-surface2 via-tovlo-orange/70 to-tovlo-yellow/80" />
-              <div className="p-6">
-                <StatusPill tone="success">{resource.status}</StatusPill>
-                <h2 className="mt-5 text-2xl font-black text-tovlo-text">
-                  {resource.name}
-                </h2>
-                <p className="mt-2 text-sm font-medium text-tovlo-muted">
-                  {resource.branch}
-                </p>
-                <div className="mt-5 grid grid-cols-2 gap-3">
-                  <div className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/40 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-                      Багтаамж
-                    </p>
-                    <p className="mt-2 text-sm font-black text-tovlo-text">
-                      {resource.capacity}
-                    </p>
-                  </div>
-                  <div className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/40 p-4">
-                    <p className="text-xs font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-                      Үнэ
-                    </p>
-                    <p className="mt-2 text-sm font-black text-tovlo-text">
-                      {resource.price}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
+          {featuredResources.map((resource) => (
+            <ResourceCard key={resource.id} resource={resource} />
           ))}
         </div>
       </SectionShell>

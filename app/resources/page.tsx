@@ -3,12 +3,14 @@ import { ResourceCard } from "@/components/ResourceCard";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
-import { branches, resources } from "@/lib/mock-data";
+import { getPublicDistricts, getPublicResources } from "@/lib/public-resources";
 
-const districts = Array.from(new Set(branches.map((branch) => branch.district)));
-const visibleResources = resources;
+export default async function ResourcesPage() {
+  const [districts, visibleResources] = await Promise.all([
+    getPublicDistricts(),
+    getPublicResources(24),
+  ]);
 
-export default function ResourcesPage() {
   return (
     <main>
       <Header />
@@ -20,7 +22,7 @@ export default function ResourcesPage() {
             Караоке өрөөнүүд.
           </h1>
           <p className="mt-6 text-base font-medium leading-[1.55] text-tovlo-muted sm:text-lg">
-            Байршил, багтаамж, үнэ болон боломжит цагийн preview мэдээллээр өрөөгөө сонгоно. Энэ үе шатанд бүх өгөгдөл mock байна.
+            Байршил, багтаамж, үнэ болон боломжит цагийн мэдээллээр өрөөгөө сонгоно. Өгөгдөл Prisma-аас уншигдаж, database хоосон үед mock fallback ашиглана.
           </p>
         </div>
       </SectionShell>

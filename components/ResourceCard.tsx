@@ -1,15 +1,14 @@
 import Link from "next/link";
-import { formatPrice, getBranchById, type Resource } from "@/lib/mock-data";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { StatusPill } from "@/components/ui/StatusPill";
+import { formatPrice } from "@/lib/format";
+import type { PublicResource } from "@/lib/public-resources";
 
 type ResourceCardProps = {
-  resource: Resource;
+  resource: PublicResource;
 };
 
 export function ResourceCard({ resource }: ResourceCardProps) {
-  const branch = getBranchById(resource.branchId);
-
   return (
     <Link href={`/resources/${resource.slug}`}>
       <GlassCard className="h-full overflow-hidden p-0 transition duration-200 hover:-translate-y-1 hover:border-tovlo-yellow/80">
@@ -22,7 +21,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
             {resource.name}
           </h2>
           <p className="mt-2 text-sm font-medium text-tovlo-muted">
-            {branch?.district} · {branch?.name}
+            {resource.branch.district} · {resource.branch.name}
           </p>
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/40 p-4">
