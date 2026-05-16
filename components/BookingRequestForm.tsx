@@ -42,12 +42,12 @@ export function BookingRequestForm({
     <form action={formAction} className="mt-6 space-y-4">
       <input name="resourceSlug" type="hidden" value={resourceSlug} />
 
-      <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+      <label className="field-surface block rounded-3xl px-4 py-3">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
           Нэр
         </span>
         <input
-          className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/65"
+          className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
           name="customerName"
           placeholder="Таны нэр"
           required
@@ -55,12 +55,12 @@ export function BookingRequestForm({
         <FieldError errors={state.fieldErrors?.customerName} />
       </label>
 
-      <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+      <label className="field-surface block rounded-3xl px-4 py-3">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
           Утас
         </span>
         <input
-          className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/65"
+          className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
           inputMode="tel"
           name="customerPhone"
           placeholder="99112233"
@@ -70,7 +70,7 @@ export function BookingRequestForm({
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+        <label className="field-surface block rounded-3xl px-4 py-3">
           <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
             Өдөр
           </span>
@@ -85,7 +85,7 @@ export function BookingRequestForm({
           <FieldError errors={state.fieldErrors?.date} />
         </label>
 
-        <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+        <label className="field-surface block rounded-3xl px-4 py-3">
           <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
             Эхлэх цаг
           </span>
@@ -102,7 +102,7 @@ export function BookingRequestForm({
         </label>
       </div>
 
-      <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+      <label className="field-surface block rounded-3xl px-4 py-3">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
           Үргэлжлэх цаг
         </span>
@@ -121,12 +121,12 @@ export function BookingRequestForm({
         <FieldError errors={state.fieldErrors?.durationHours} />
       </label>
 
-      <label className="block rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+      <label className="field-surface block rounded-3xl px-4 py-3">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
           Тэмдэглэл
         </span>
         <textarea
-          className="mt-2 min-h-20 w-full resize-none bg-transparent text-sm font-medium text-tovlo-text outline-none placeholder:text-tovlo-muted/65"
+          className="mt-2 min-h-20 w-full resize-none bg-transparent text-sm font-medium text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
           name="note"
           placeholder="Хүсвэл нэмэлт мэдээлэл бичнэ үү"
         />
@@ -138,8 +138,8 @@ export function BookingRequestForm({
           className={[
             "rounded-3xl border px-4 py-3 text-sm font-bold leading-[1.55]",
             state.ok
-              ? "border-tovlo-success/50 bg-tovlo-success/10 text-tovlo-success"
-              : "border-tovlo-booked/50 bg-tovlo-booked/10 text-tovlo-booked",
+              ? "border-tovlo-success/35 bg-tovlo-success/10 text-tovlo-success"
+              : "border-tovlo-booked/35 bg-tovlo-booked/10 text-tovlo-booked",
           ].join(" ")}
         >
           {state.message}
@@ -147,7 +147,7 @@ export function BookingRequestForm({
       )}
 
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-tovlo-orange to-tovlo-yellow px-6 py-3 text-sm font-black text-[#120A04] shadow-glow transition duration-200 hover:translate-y-[-1px] disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-tovlo-orange via-tovlo-softOrange to-tovlo-yellow px-6 py-3 text-sm font-black text-[#120A04] shadow-glow transition duration-200 hover:translate-y-[-2px] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={pending}
         type="submit"
       >

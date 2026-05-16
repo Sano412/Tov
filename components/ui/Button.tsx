@@ -9,10 +9,10 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-gradient-to-r from-tovlo-orange to-tovlo-yellow text-[#120A04] shadow-glow hover:translate-y-[-1px]",
+    "bg-gradient-to-r from-tovlo-orange via-tovlo-softOrange to-tovlo-yellow text-[#120A04] shadow-glow hover:translate-y-[-2px] hover:brightness-110",
   secondary:
-    "border border-tovlo-line/60 bg-tovlo-surface/70 text-tovlo-text hover:border-tovlo-yellow/80",
-  ghost: "text-tovlo-muted hover:bg-tovlo-surface/70 hover:text-tovlo-text",
+    "border border-tovlo-line/28 bg-tovlo-glass/9 text-tovlo-text shadow-innerGlow backdrop-blur-xl hover:border-tovlo-yellow/70 hover:bg-tovlo-glassStrong/12",
+  ghost: "text-tovlo-muted/85 hover:bg-tovlo-glass/8 hover:text-tovlo-text",
 };
 
 export function Button({

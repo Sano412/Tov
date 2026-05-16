@@ -4,28 +4,42 @@
 
 :root {
   --color-background: #120a04;
-  --color-surface: #241207;
-  --color-surface-2: #32190b;
-  --color-text: #fff7ed;
-  --color-muted: #ffe7c2;
-  --color-line: #fed7aa;
-  --color-orange: #f97316;
-  --color-yellow: #facc15;
-  --color-success: #22c55e;
-  --color-booked: #ef4444;
+  --color-background-rgb: 18 10 4;
+  --color-darker-rgb: 14 7 3;
+  --color-surface-rgb: 28 18 8;
+  --color-surface-2-rgb: 37 17 6;
+  --color-text-rgb: 255 247 237;
+  --color-muted-rgb: 255 237 213;
+  --color-subtle-rgb: 255 237 213;
+  --color-line-rgb: 254 215 170;
+  --color-glass-rgb: 255 247 237;
+  --color-glass-strong-rgb: 255 247 237;
+  --color-orange-rgb: 249 115 22;
+  --color-soft-orange-rgb: 251 146 60;
+  --color-yellow-rgb: 250 204 21;
+  --color-amber-rgb: 253 186 116;
+  --color-success-rgb: 34 197 94;
+  --color-booked-rgb: 239 68 68;
 }
 
 :root[data-theme="light"] {
   --color-background: #fff7ed;
-  --color-surface: #ffffff;
-  --color-surface-2: #fff3e4;
-  --color-text: #2a1207;
-  --color-muted: #6b3a16;
-  --color-line: #fed7aa;
-  --color-orange: #f97316;
-  --color-yellow: #facc15;
-  --color-success: #16a34a;
-  --color-booked: #dc2626;
+  --color-background-rgb: 255 247 237;
+  --color-darker-rgb: 255 251 245;
+  --color-surface-rgb: 255 255 255;
+  --color-surface-2-rgb: 254 243 199;
+  --color-text-rgb: 28 18 8;
+  --color-muted-rgb: 107 78 53;
+  --color-subtle-rgb: 107 78 53;
+  --color-line-rgb: 254 215 170;
+  --color-glass-rgb: 255 255 255;
+  --color-glass-strong-rgb: 254 243 199;
+  --color-orange-rgb: 249 115 22;
+  --color-soft-orange-rgb: 251 146 60;
+  --color-yellow-rgb: 250 204 21;
+  --color-amber-rgb: 124 45 18;
+  --color-success-rgb: 22 163 74;
+  --color-booked-rgb: 220 38 38;
 }
 
 * {
@@ -34,17 +48,19 @@
 
 html {
   min-height: 100%;
-  background: var(--color-background);
+  background: #120a04;
 }
 
 body {
   min-height: 100vh;
   margin: 0;
-  color: var(--color-text);
+  overflow-x: hidden;
+  color: rgb(var(--color-text-rgb));
   background:
-    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.18), transparent 28rem),
-    radial-gradient(circle at 54% 82%, rgba(250, 204, 21, 0.11), transparent 24rem),
-    linear-gradient(135deg, #120a04 0%, #1c1208 55%, #251106 100%);
+    radial-gradient(circle at 78% 10%, rgba(249, 115, 22, 0.22), transparent 27rem),
+    radial-gradient(circle at 22% 22%, rgba(253, 186, 116, 0.10), transparent 24rem),
+    radial-gradient(circle at 52% 86%, rgba(250, 204, 21, 0.10), transparent 28rem),
+    linear-gradient(135deg, #0e0703 0%, #120a04 42%, #251106 100%);
 }
 
 a {
@@ -52,18 +68,71 @@ a {
   text-decoration: none;
 }
 
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+select,
+input[type="date"] {
+  color-scheme: dark;
+}
+
 ::selection {
   color: #120a04;
-  background: var(--color-yellow);
+  background: rgb(var(--color-yellow-rgb));
+}
+
+.page-shell {
+  position: relative;
+  isolation: isolate;
+}
+
+.page-shell::before {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  content: "";
+  background-image:
+    linear-gradient(rgba(254, 215, 170, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(254, 215, 170, 0.028) 1px, transparent 1px);
+  background-size: 88px 88px;
+  mask-image: radial-gradient(circle at top, black, transparent 72%);
+}
+
+.field-surface {
+  border: 1px solid rgb(var(--color-line-rgb) / 0.22);
+  background:
+    linear-gradient(180deg, rgb(var(--color-glass-strong-rgb) / 0.11), rgb(var(--color-glass-rgb) / 0.065)),
+    rgb(var(--color-darker-rgb) / 0.34);
+  box-shadow: inset 0 1px 0 rgb(var(--color-text-rgb) / 0.10);
+}
+
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::before {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background: linear-gradient(135deg, rgb(var(--color-text-rgb) / 0.11), transparent 34%);
+  opacity: 0.9;
 }
 
 .room-stack {
-  perspective: 900px;
+  perspective: 1000px;
 }
 
 .room-stack-card {
   transform-style: preserve-3d;
-  animation: room-card-float 7s ease-in-out infinite;
+  animation: room-card-float 7.5s ease-in-out infinite;
+  will-change: transform;
 }
 
 .room-stack-card:nth-child(2) {
@@ -77,18 +146,18 @@ a {
 @keyframes room-card-float {
   0%,
   100% {
-    transform: translateY(0) rotateX(8deg) rotateY(-10deg);
+    transform: translateY(0) rotateX(8deg) rotateY(-9deg);
   }
   50% {
-    transform: translateY(-10px) rotateX(5deg) rotateY(-6deg);
+    transform: translateY(-12px) rotateX(5deg) rotateY(-5deg);
   }
 }
 
 @media (max-width: 640px) {
   body {
     background:
-      radial-gradient(circle at 90% 8%, rgba(249, 115, 22, 0.14), transparent 18rem),
-      linear-gradient(135deg, #120a04 0%, #1c1208 100%);
+      radial-gradient(circle at 92% 6%, rgba(249, 115, 22, 0.16), transparent 18rem),
+      linear-gradient(135deg, #0e0703 0%, #120a04 100%);
   }
 
   .room-stack-card {

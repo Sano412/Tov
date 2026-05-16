@@ -12,7 +12,7 @@ export default async function ResourcesPage() {
   ]);
 
   return (
-    <main>
+    <main className="page-shell">
       <Header />
 
       <SectionShell className="pb-8 pt-8 sm:pt-14">
@@ -21,8 +21,8 @@ export default async function ResourcesPage() {
           <h1 className="mt-7 text-5xl font-black leading-[0.95] text-tovlo-text sm:text-7xl">
             Караоке өрөөнүүд.
           </h1>
-          <p className="mt-6 text-base font-medium leading-[1.55] text-tovlo-muted sm:text-lg">
-            Байршил, багтаамж, үнэ болон боломжит цагийн мэдээллээр өрөөгөө сонгоно. Өгөгдөл Prisma-аас уншигдаж, database хоосон үед mock fallback ашиглана.
+          <p className="mt-6 text-base font-medium leading-[1.65] text-tovlo-muted/80 sm:text-lg">
+            Байршил, багтаамж, үнэ болон боломжит цагийн мэдээллээр өрөөгөө сонгоно.
           </p>
         </div>
       </SectionShell>
@@ -30,17 +30,17 @@ export default async function ResourcesPage() {
       <SectionShell className="pt-0">
         <GlassCard className="p-4">
           <div className="grid gap-3 lg:grid-cols-[1.3fr_1fr_1fr_1fr_auto]">
-            <label className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+            <label className="field-surface rounded-3xl px-4 py-3">
               <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
                 Хайх
               </span>
               <input
-                className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/65"
+                className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
                 placeholder="Өрөө, салбар, дүүрэг"
                 type="search"
               />
             </label>
-            <label className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+            <label className="field-surface rounded-3xl px-4 py-3">
               <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
                 Дүүрэг
               </span>
@@ -51,7 +51,7 @@ export default async function ResourcesPage() {
                 ))}
               </select>
             </label>
-            <label className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+            <label className="field-surface rounded-3xl px-4 py-3">
               <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
                 Багтаамж
               </span>
@@ -62,7 +62,7 @@ export default async function ResourcesPage() {
                 <option>10+ хүн</option>
               </select>
             </label>
-            <label className="rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+            <label className="field-surface rounded-3xl px-4 py-3">
               <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
                 Үнэ
               </span>
@@ -73,7 +73,7 @@ export default async function ResourcesPage() {
                 <option>60,000₮ дээш</option>
               </select>
             </label>
-            <label className="flex min-h-16 items-center gap-3 rounded-3xl border border-tovlo-line/35 bg-tovlo-background/45 px-4 py-3">
+            <label className="field-surface flex min-h-16 items-center gap-3 rounded-3xl px-4 py-3">
               <input className="h-4 w-4 accent-tovlo-orange" type="checkbox" />
               <span className="text-sm font-black text-tovlo-text">Одоо боломжтой</span>
             </label>
@@ -89,12 +89,12 @@ export default async function ResourcesPage() {
             ))}
           </div>
         ) : (
-          <GlassCard className="text-center">
+          <GlassCard className="mx-auto max-w-2xl text-center">
             <StatusPill tone="neutral">Empty</StatusPill>
             <h2 className="mt-5 text-3xl font-black text-tovlo-text">
               Тохирох өрөө олдсонгүй.
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-sm font-medium leading-[1.55] text-tovlo-muted">
+            <p className="mx-auto mt-4 max-w-xl text-sm font-medium leading-[1.65] text-tovlo-muted/78">
               Шүүлтүүрээ өөрчлөөд дахин хайж үзээрэй. Бодит хайлт дараагийн фазад нэмэгдэнэ.
             </p>
           </GlassCard>

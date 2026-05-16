@@ -38,13 +38,13 @@ export default async function BusinessPage() {
   const dashboard = await getBusinessDashboard(owner);
 
   return (
-    <main>
+    <main className="page-shell">
       <Header />
 
       <SectionShell className="pb-16 pt-8 sm:pt-12">
         <div className="grid gap-5 lg:grid-cols-[260px_1fr]">
           <aside className="lg:sticky lg:top-6 lg:self-start">
-            <GlassCard className="p-5">
+            <GlassCard className="bg-tovlo-glassStrong/10 p-5">
               <div className="mb-8">
                 <p className="text-xs font-black uppercase tracking-[0.12em] text-tovlo-yellow">
                   Business
@@ -56,7 +56,7 @@ export default async function BusinessPage() {
               <nav className="grid gap-2" aria-label="Business dashboard navigation">
                 {["Overview", "Bookings", "Resources", "Calendar", "Rules"].map((item) => (
                   <a
-                    className="rounded-3xl border border-tovlo-line/25 bg-tovlo-background/35 px-4 py-3 text-sm font-black text-tovlo-muted transition hover:border-tovlo-yellow/70 hover:text-tovlo-text"
+                    className="rounded-3xl border border-tovlo-line/22 bg-tovlo-darker/35 px-4 py-3 text-sm font-black text-tovlo-muted/82 transition hover:border-tovlo-yellow/60 hover:bg-tovlo-glass/8 hover:text-tovlo-text"
                     href={`#${item.toLowerCase()}`}
                     key={item}
                   >
@@ -68,7 +68,7 @@ export default async function BusinessPage() {
           </aside>
 
           <div className="space-y-5">
-            <GlassCard className="bg-tovlo-surface2/70 p-7 sm:p-9">
+            <GlassCard className="bg-tovlo-glassStrong/10 p-7 sm:p-9">
               <StatusPill>Mock guarded route</StatusPill>
               <div className="mt-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>

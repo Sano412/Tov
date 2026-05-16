@@ -12,7 +12,7 @@ export function GlassCard({
   return (
     <div
       className={[
-        "rounded-card border border-tovlo-line/55 bg-tovlo-surface/78 p-6 shadow-glass backdrop-blur-xl",
+        "rounded-card border border-tovlo-line/22 bg-tovlo-glass/8 p-6 shadow-glass shadow-innerGlow backdrop-blur-2xl",
         className,
       ].join(" ")}
       {...props}
