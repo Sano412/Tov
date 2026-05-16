@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
+import { BookingRequestForm } from "@/components/BookingRequestForm";
 import { Header } from "@/components/Header";
 import { ResourceCard } from "@/components/ResourceCard";
-import { Button } from "@/components/ui/Button";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -137,7 +137,10 @@ export default async function ResourceDetailPage({
               </p>
             </div>
 
-            <Button className="mt-6 w-full">Захиалгын хүсэлт илгээх</Button>
+            <BookingRequestForm
+              availableSlots={resource.availableSlots}
+              resourceSlug={resource.slug}
+            />
           </GlassCard>
         </div>
       </SectionShell>
