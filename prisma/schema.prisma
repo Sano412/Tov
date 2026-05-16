@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?  @unique
+  email     String?  @unique
+  role      String   @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Business {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  status    String   @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  branches Branch[]
+}
+
+model Branch {
+  id            String   @id @default(cuid())
+  businessId    String
+  name          String
+  district      String
+  address       String
+  openTime      String
+  closeTime     String
+  bufferMinutes Int      @default(15)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  business  Business   @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  resources Resource[]
+
+  @@index([businessId])
+  @@index([district])
+}
+
+model Category {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  resources Resource[]
+}
+
+model Resource {
+  id           String   @id @default(cuid())
+  branchId     String
+  categoryId   String
+  name         String
+  slug         String   @unique
+  description  String
+  capacityMin  Int
+  capacityMax  Int
+  pricePerHour Int
+  imageUrl     String?
+  status       String   @default("ACTIVE")
+  isFeatured   Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  branch   Branch    @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  category Category  @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  bookings Booking[]
+
+  @@index([branchId])
+  @@index([categoryId])
+  @@index([status])
+  @@index([isFeatured])
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  resourceId    String
+  customerName  String
+  customerPhone String
+  startTime     DateTime
+  endTime       DateTime
+  status        String   @default("PENDING")
+  note          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  resource Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+
+  @@index([resourceId])
+  @@index([status])
+  @@index([startTime, endTime])
+}

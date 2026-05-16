@@ -8,15 +8,18 @@ export function Header() {
         <span className="h-2.5 w-2.5 rounded-full bg-tovlo-orange" aria-hidden="true" />
       </a>
       <nav className="hidden items-center gap-2 sm:flex" aria-label="Main navigation">
-        <a className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted transition hover:text-tovlo-text" href="#mvp">
-          MVP
+        <a className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted transition hover:text-tovlo-text" href="#how-it-works">
+          Яаж ажиллах вэ
         </a>
-        <a className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted transition hover:text-tovlo-text" href="#foundation">
-          Foundation
+        <a className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted transition hover:text-tovlo-text" href="#featured">
+          Өрөөнүүд
+        </a>
+        <a className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted transition hover:text-tovlo-text" href="#rules">
+          Дүрэм
         </a>
       </nav>
       <Button className="hidden sm:inline-flex" variant="secondary">
-        Preview MVP
+        Товлох
       </Button>
     </header>
   );

@@ -57,10 +57,41 @@ a {
   background: var(--color-yellow);
 }
 
+.room-stack {
+  perspective: 900px;
+}
+
+.room-stack-card {
+  transform-style: preserve-3d;
+  animation: room-card-float 7s ease-in-out infinite;
+}
+
+.room-stack-card:nth-child(2) {
+  animation-delay: -1.6s;
+}
+
+.room-stack-card:nth-child(3) {
+  animation-delay: -3.2s;
+}
+
+@keyframes room-card-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(8deg) rotateY(-10deg);
+  }
+  50% {
+    transform: translateY(-10px) rotateX(5deg) rotateY(-6deg);
+  }
+}
+
 @media (max-width: 640px) {
   body {
     background:
       radial-gradient(circle at 90% 8%, rgba(249, 115, 22, 0.14), transparent 18rem),
       linear-gradient(135deg, #120a04 0%, #1c1208 100%);
+  }
+
+  .room-stack-card {
+    animation: none;
   }
 }
