@@ -1,6 +1,6 @@
-import type { ReactNode, SectionHTMLAttributes } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-type SectionShellProps = SectionHTMLAttributes<HTMLElement> & {
+type SectionShellProps = ComponentPropsWithoutRef<"section"> & {
   children: ReactNode;
   eyebrow?: string;
   title?: string;
