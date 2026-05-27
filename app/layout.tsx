@@ -3,13 +3,14 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
   title: "Tovlo",
-  description: "A warm, friendly booking app for reservable resources.",
+  description:
+    "Find karaoke rooms, compare availability, and send booking requests with Tovlo.",
 };
 
 export default function RootLayout({
@@ -18,8 +19,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="mn" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{document.documentElement.dataset.theme=localStorage.getItem('tovlo-theme')==='light'?'light':'dark'}catch(e){document.documentElement.dataset.theme='dark'}",
+          }}
+        />
         {children}
       </body>
     </html>

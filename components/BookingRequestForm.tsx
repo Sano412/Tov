@@ -31,10 +31,7 @@ function FieldError({ errors }: { errors?: string[] }) {
   return <p className="mt-2 text-xs font-bold text-tovlo-booked">{errors[0]}</p>;
 }
 
-export function BookingRequestForm({
-  resourceSlug,
-  availableSlots,
-}: BookingRequestFormProps) {
+export function BookingRequestForm({ resourceSlug, availableSlots }: BookingRequestFormProps) {
   const [state, formAction, pending] = useActionState(submitBookingRequest, initialState);
   const slotOptions = availableSlots.length > 0 ? availableSlots : ["18:00", "19:00", "20:00"];
 
@@ -42,22 +39,22 @@ export function BookingRequestForm({
     <form action={formAction} className="mt-6 space-y-4">
       <input name="resourceSlug" type="hidden" value={resourceSlug} />
 
-      <label className="field-surface block rounded-3xl px-4 py-3">
+      <label className="field-surface block rounded-2xl px-5 py-4">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-          Нэр
+          Name
         </span>
         <input
           className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
           name="customerName"
-          placeholder="Таны нэр"
+          placeholder="Your name"
           required
         />
         <FieldError errors={state.fieldErrors?.customerName} />
       </label>
 
-      <label className="field-surface block rounded-3xl px-4 py-3">
+      <label className="field-surface block rounded-2xl px-5 py-4">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-          Утас
+          Phone
         </span>
         <input
           className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
@@ -70,9 +67,9 @@ export function BookingRequestForm({
       </label>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <label className="field-surface block rounded-3xl px-4 py-3">
+        <label className="field-surface block rounded-2xl px-5 py-4">
           <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-            Өдөр
+            Date
           </span>
           <input
             className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none"
@@ -85,9 +82,9 @@ export function BookingRequestForm({
           <FieldError errors={state.fieldErrors?.date} />
         </label>
 
-        <label className="field-surface block rounded-3xl px-4 py-3">
+        <label className="field-surface block rounded-2xl px-5 py-4">
           <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-            Эхлэх цаг
+            Start
           </span>
           <select
             className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none"
@@ -102,9 +99,9 @@ export function BookingRequestForm({
         </label>
       </div>
 
-      <label className="field-surface block rounded-3xl px-4 py-3">
+      <label className="field-surface block rounded-2xl px-5 py-4">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-          Үргэлжлэх цаг
+          Duration
         </span>
         <select
           className="mt-2 w-full bg-transparent text-sm font-black text-tovlo-text outline-none"
@@ -114,21 +111,21 @@ export function BookingRequestForm({
         >
           {[1, 2, 3, 4, 5, 6].map((hour) => (
             <option key={hour} value={hour}>
-              {hour} цаг
+              {hour} hour{hour > 1 ? "s" : ""}
             </option>
           ))}
         </select>
         <FieldError errors={state.fieldErrors?.durationHours} />
       </label>
 
-      <label className="field-surface block rounded-3xl px-4 py-3">
+      <label className="field-surface block rounded-2xl px-5 py-4">
         <span className="text-[11px] font-black uppercase tracking-[0.12em] text-tovlo-yellow">
-          Тэмдэглэл
+          Note
         </span>
         <textarea
           className="mt-2 min-h-20 w-full resize-none bg-transparent text-sm font-medium text-tovlo-text outline-none placeholder:text-tovlo-muted/55"
           name="note"
-          placeholder="Хүсвэл нэмэлт мэдээлэл бичнэ үү"
+          placeholder="Optional request details"
         />
         <FieldError errors={state.fieldErrors?.note} />
       </label>
@@ -136,7 +133,7 @@ export function BookingRequestForm({
       {state.message && (
         <p
           className={[
-            "rounded-3xl border px-4 py-3 text-sm font-bold leading-[1.55]",
+            "rounded-2xl border px-4 py-3 text-sm font-bold leading-[1.55]",
             state.ok
               ? "border-tovlo-success/35 bg-tovlo-success/10 text-tovlo-success"
               : "border-tovlo-booked/35 bg-tovlo-booked/10 text-tovlo-booked",
@@ -147,11 +144,11 @@ export function BookingRequestForm({
       )}
 
       <button
-        className="inline-flex min-h-12 w-full items-center justify-center rounded-full bg-gradient-to-r from-tovlo-orange via-tovlo-softOrange to-tovlo-yellow px-6 py-3 text-sm font-black text-[#120A04] shadow-glow transition duration-200 hover:translate-y-[-2px] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-gradient-to-r from-tovlo-orange to-tovlo-yellow px-6 py-3 text-sm font-black text-[#120A04] shadow-glow transition duration-200 hover:translate-y-[-2px] hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
         disabled={pending}
         type="submit"
       >
-        {pending ? "Илгээж байна..." : "Захиалгын хүсэлт илгээх"}
+        {pending ? "Sending..." : "Request booking"}
       </button>
     </form>
   );

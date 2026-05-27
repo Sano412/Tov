@@ -1,9 +1,12 @@
 import { Header } from "@/components/Header";
+import { AdminBusinessDecisionForm } from "@/components/AdminBusinessDecisionForm";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { getAdminDashboard } from "@/lib/admin-dashboard";
 import { requireSuperAdmin } from "@/lib/auth/guards";
+
+export const dynamic = "force-dynamic";
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat("mn-MN", {
@@ -48,16 +51,15 @@ export default async function AdminPage() {
               </div>
               <nav className="grid gap-2" aria-label="Admin dashboard navigation">
                 {[
-                  "Stats",
-                  "Approvals",
-                  "Categories",
-                  "Bookings",
-                  "Featured",
-                  "Analytics",
-                ].map((item) => (
+                  ["Overview", "/admin"],
+                  ["Businesses", "/admin/businesses"],
+                  ["Categories", "/admin/categories"],
+                  ["Bookings", "/admin/bookings"],
+                  ["Analytics", "/admin/analytics"],
+                ].map(([item, href]) => (
                   <a
                     className="rounded-3xl border border-tovlo-line/22 bg-tovlo-darker/35 px-4 py-3 text-sm font-black text-tovlo-muted/82 transition hover:border-tovlo-yellow/60 hover:bg-tovlo-glass/8 hover:text-tovlo-text"
-                    href={`#${item.toLowerCase()}`}
+                    href={href}
                     key={item}
                   >
                     {item}
@@ -107,23 +109,10 @@ export default async function AdminPage() {
                           <div>
                             <p className="font-black text-tovlo-text">{business.name}</p>
                             <p className="mt-1 text-sm font-medium text-tovlo-muted">
-                              {business.slug} · {formatDate(business.createdAt)}
+                              {business.slug} &middot; {formatDate(business.createdAt)}
                             </p>
                           </div>
-                          <div className="flex gap-2">
-                            <button
-                              className="rounded-full border border-tovlo-success/50 px-4 py-2 text-xs font-black text-tovlo-success"
-                              type="button"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              className="rounded-full border border-tovlo-booked/50 px-4 py-2 text-xs font-black text-tovlo-booked"
-                              type="button"
-                            >
-                              Reject
-                            </button>
-                          </div>
+                          <AdminBusinessDecisionForm businessId={business.id} />
                         </div>
                       </div>
                     ))
@@ -138,17 +127,23 @@ export default async function AdminPage() {
               <GlassCard id="categories">
                 <StatusPill>Categories overview</StatusPill>
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {dashboard.categories.map((category) => (
-                    <div
-                      className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
-                      key={category.id}
-                    >
-                      <p className="font-black text-tovlo-text">{category.name}</p>
-                      <p className="mt-1 text-sm font-medium text-tovlo-muted">
-                        {category.slug} · {category.resourceCount} resources
-                      </p>
-                    </div>
-                  ))}
+                  {dashboard.categories.length > 0 ? (
+                    dashboard.categories.map((category) => (
+                      <div
+                        className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
+                        key={category.id}
+                      >
+                        <p className="font-black text-tovlo-text">{category.name}</p>
+                        <p className="mt-1 text-sm font-medium text-tovlo-muted">
+                          {category.slug} &middot; {category.resourceCount} resources
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm font-medium text-tovlo-muted">
+                      No categories are available yet.
+                    </p>
+                  )}
                 </div>
               </GlassCard>
             </section>
@@ -172,32 +167,40 @@ export default async function AdminPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-tovlo-line/20">
-                    {dashboard.recentBookings.map((booking) => (
-                      <tr key={booking.id}>
-                        <td className="px-6 py-4">
-                          <p className="font-black text-tovlo-text">{booking.customerName}</p>
-                          <p className="text-xs font-medium text-tovlo-muted">
-                            {booking.customerPhone}
-                          </p>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
-                          {booking.businessName}
-                        </td>
-                        <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
-                          {booking.resourceName}
-                        </td>
-                        <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
-                          {formatDate(booking.createdAt)}
-                        </td>
-                        <td className="px-6 py-4">
-                          <StatusPill
-                            tone={booking.status === "CONFIRMED" ? "success" : "neutral"}
-                          >
-                            {booking.status}
-                          </StatusPill>
+                    {dashboard.recentBookings.length > 0 ? (
+                      dashboard.recentBookings.map((booking) => (
+                        <tr key={booking.id}>
+                          <td className="px-6 py-4">
+                            <p className="font-black text-tovlo-text">{booking.customerName}</p>
+                            <p className="text-xs font-medium text-tovlo-muted">
+                              {booking.customerPhone}
+                            </p>
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
+                            {booking.businessName}
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
+                            {booking.resourceName}
+                          </td>
+                          <td className="px-6 py-4 text-sm font-bold text-tovlo-muted">
+                            {formatDate(booking.createdAt)}
+                          </td>
+                          <td className="px-6 py-4">
+                            <StatusPill
+                              tone={booking.status === "CONFIRMED" ? "success" : "neutral"}
+                            >
+                              {booking.status}
+                            </StatusPill>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td className="px-6 py-8 text-sm font-bold text-tovlo-muted" colSpan={5}>
+                          No recent bookings yet.
                         </td>
                       </tr>
-                    ))}
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -207,17 +210,23 @@ export default async function AdminPage() {
               <GlassCard id="featured">
                 <StatusPill>Featured listings placeholder</StatusPill>
                 <div className="mt-5 grid gap-3">
-                  {dashboard.featuredResources.map((resource) => (
-                    <div
-                      className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
-                      key={resource.id}
-                    >
-                      <p className="font-black text-tovlo-text">{resource.name}</p>
-                      <p className="mt-1 text-sm font-medium text-tovlo-muted">
-                        {resource.businessName} · {resource.branchName} · {resource.status}
-                      </p>
-                    </div>
-                  ))}
+                  {dashboard.featuredResources.length > 0 ? (
+                    dashboard.featuredResources.map((resource) => (
+                      <div
+                        className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
+                        key={resource.id}
+                      >
+                        <p className="font-black text-tovlo-text">{resource.name}</p>
+                        <p className="mt-1 text-sm font-medium text-tovlo-muted">
+                          {resource.businessName} &middot; {resource.branchName} &middot; {resource.status}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm font-medium text-tovlo-muted">
+                      No featured listings yet.
+                    </p>
+                  )}
                 </div>
               </GlassCard>
 

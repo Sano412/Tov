@@ -1,10 +1,13 @@
 import { Header } from "@/components/Header";
+import { BusinessBookingDecisionForm } from "@/components/BusinessBookingDecisionForm";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { SectionShell } from "@/components/ui/SectionShell";
 import { StatusPill } from "@/components/ui/StatusPill";
 import { requireBusinessOwner } from "@/lib/auth/guards";
 import { getBusinessDashboard } from "@/lib/business-dashboard";
 import { formatPrice } from "@/lib/format";
+
+export const dynamic = "force-dynamic";
 
 function formatDateTime(date: Date) {
   return new Intl.DateTimeFormat("mn-MN", {
@@ -54,10 +57,16 @@ export default async function BusinessPage() {
                 </h1>
               </div>
               <nav className="grid gap-2" aria-label="Business dashboard navigation">
-                {["Overview", "Bookings", "Resources", "Calendar", "Rules"].map((item) => (
+                {[
+                  ["Overview", "/business"],
+                  ["Bookings", "/business/bookings"],
+                  ["Resources", "/business/resources"],
+                  ["Calendar", "/business/calendar"],
+                  ["Branches", "/business/branches"],
+                ].map(([item, href]) => (
                   <a
                     className="rounded-3xl border border-tovlo-line/22 bg-tovlo-darker/35 px-4 py-3 text-sm font-black text-tovlo-muted/82 transition hover:border-tovlo-yellow/60 hover:bg-tovlo-glass/8 hover:text-tovlo-text"
-                    href={`#${item.toLowerCase()}`}
+                    href={href}
                     key={item}
                   >
                     {item}
@@ -115,7 +124,7 @@ export default async function BusinessPage() {
                   />
                   <DashboardStat
                     label="Estimated revenue"
-                    value={`${formatPrice(dashboard.estimatedRevenue)}₮`}
+                    value={`${formatPrice(dashboard.estimatedRevenue)} MNT`}
                     tone="neutral"
                   />
                 </section>
@@ -140,8 +149,9 @@ export default async function BusinessPage() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-tovlo-line/20">
-                          {dashboard.todayBookings.map((booking) => (
-                            <tr key={booking.id}>
+                          {dashboard.todayBookings.length > 0 ? (
+                            dashboard.todayBookings.map((booking) => (
+                              <tr key={booking.id}>
                               <td className="px-6 py-4">
                                 <p className="font-black text-tovlo-text">
                                   {booking.customerName}
@@ -172,8 +182,15 @@ export default async function BusinessPage() {
                                   View
                                 </button>
                               </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td className="px-6 py-8 text-sm font-bold text-tovlo-muted" colSpan={5}>
+                                No bookings scheduled for today.
+                              </td>
                             </tr>
-                          ))}
+                          )}
                         </tbody>
                       </table>
                     </div>
@@ -185,20 +202,26 @@ export default async function BusinessPage() {
                       Schedule glance
                     </h2>
                     <div className="mt-6 grid gap-3">
-                      {dashboard.todayBookings.slice(0, 5).map((booking) => (
-                        <div
-                          className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
-                          key={booking.id}
-                        >
-                          <p className="text-sm font-black text-tovlo-text">
-                            {booking.resourceName}
-                          </p>
-                          <p className="mt-1 text-xs font-bold text-tovlo-muted">
-                            {formatDateTime(booking.startTime)} -{" "}
-                            {formatDateTime(booking.endTime)}
-                          </p>
-                        </div>
-                      ))}
+                      {dashboard.todayBookings.length > 0 ? (
+                        dashboard.todayBookings.slice(0, 5).map((booking) => (
+                          <div
+                            className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
+                            key={booking.id}
+                          >
+                            <p className="text-sm font-black text-tovlo-text">
+                              {booking.resourceName}
+                            </p>
+                            <p className="mt-1 text-xs font-bold text-tovlo-muted">
+                              {formatDateTime(booking.startTime)} -{" "}
+                              {formatDateTime(booking.endTime)}
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm font-medium text-tovlo-muted">
+                          No bookings on the calendar today.
+                        </p>
+                      )}
                     </div>
                   </GlassCard>
                 </section>
@@ -219,23 +242,10 @@ export default async function BusinessPage() {
                                   {booking.customerName}
                                 </p>
                                 <p className="mt-1 text-sm font-medium text-tovlo-muted">
-                                  {booking.resourceName} · {formatDateTime(booking.startTime)}
+                                  {booking.resourceName} &middot; {formatDateTime(booking.startTime)}
                                 </p>
                               </div>
-                              <div className="flex gap-2">
-                                <button
-                                  className="rounded-full border border-tovlo-success/50 px-4 py-2 text-xs font-black text-tovlo-success"
-                                  type="button"
-                                >
-                                  Confirm
-                                </button>
-                                <button
-                                  className="rounded-full border border-tovlo-booked/50 px-4 py-2 text-xs font-black text-tovlo-booked"
-                                  type="button"
-                                >
-                                  Reject
-                                </button>
-                              </div>
+                              <BusinessBookingDecisionForm bookingId={booking.id} />
                             </div>
                           </div>
                         ))
@@ -250,17 +260,23 @@ export default async function BusinessPage() {
                   <GlassCard id="resources">
                     <StatusPill tone="success">Available resources now</StatusPill>
                     <div className="mt-5 grid gap-3">
-                      {dashboard.availableResourcesNow.map((resource) => (
-                        <div
-                          className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
-                          key={resource.id}
-                        >
-                          <p className="font-black text-tovlo-text">{resource.name}</p>
-                          <p className="mt-1 text-sm font-medium text-tovlo-muted">
-                            {resource.branchName} · {resource.capacityMin}-{resource.capacityMax} pax
-                          </p>
-                        </div>
-                      ))}
+                      {dashboard.availableResourcesNow.length > 0 ? (
+                        dashboard.availableResourcesNow.map((resource) => (
+                          <div
+                            className="rounded-3xl border border-tovlo-line/30 bg-tovlo-background/40 p-4"
+                            key={resource.id}
+                          >
+                            <p className="font-black text-tovlo-text">{resource.name}</p>
+                            <p className="mt-1 text-sm font-medium text-tovlo-muted">
+                              {resource.branchName} &middot; {resource.capacityMin}-{resource.capacityMax} pax
+                            </p>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm font-medium text-tovlo-muted">
+                          No resources are free at this exact moment.
+                        </p>
+                      )}
                     </div>
                   </GlassCard>
                 </section>

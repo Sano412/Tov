@@ -4,10 +4,12 @@ node_modules/
 # next
 .next/
 out/
+*.tsbuildinfo
 
 # env
 .env
 .env.local
+.env.*.local
 .env.development.local
 .env.test.local
 .env.production.local
@@ -22,6 +24,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 *.log
+
+# coverage and deploy output
+coverage/
+.vercel/
+.codex-screenshots/
 
 # misc
 .DS_Store

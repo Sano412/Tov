@@ -1,38 +1,57 @@
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { logoutAction } from "@/app/login/actions";
+import { getCurrentSession } from "@/lib/auth/session";
 
-export function Header() {
+export async function Header() {
+  const session = await getCurrentSession();
+
   return (
-    <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-      <a className="group flex items-center gap-2 text-2xl font-black text-tovlo-text" href="/">
+    <header className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-6 sm:px-8">
+      <a className="group flex items-center gap-2 text-3xl font-black text-tovlo-text" href="/">
         Tovlo
         <span
-          className="h-2.5 w-2.5 rounded-full bg-tovlo-orange shadow-[0_0_22px_rgba(249,115,22,0.7)] transition group-hover:scale-125"
+          className="h-3 w-3 rounded-full bg-tovlo-orange shadow-[0_0_22px_rgba(249,115,22,0.7)] transition group-hover:scale-125"
           aria-hidden="true"
         />
       </a>
-      <nav className="hidden items-center gap-2 sm:flex" aria-label="Main navigation">
-        <a
-          className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted/80 transition hover:bg-tovlo-glass/8 hover:text-tovlo-text"
-          href="/#how-it-works"
-        >
-          Яаж ажиллах вэ
+      <nav className="hidden items-center gap-6 sm:flex" aria-label="Main navigation">
+        <a className="text-sm font-bold text-tovlo-muted/85 transition hover:text-tovlo-text" href="/">
+          Explore
         </a>
         <a
-          className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted/80 transition hover:bg-tovlo-glass/8 hover:text-tovlo-text"
+          className="text-sm font-bold text-tovlo-muted/85 transition hover:text-tovlo-text"
           href="/resources"
         >
-          Өрөөнүүд
+          Rooms
         </a>
         <a
-          className="rounded-full px-4 py-2 text-sm font-bold text-tovlo-muted/80 transition hover:bg-tovlo-glass/8 hover:text-tovlo-text"
-          href="/#rules"
+          className="text-sm font-bold text-tovlo-muted/85 transition hover:text-tovlo-text"
+          href="/dashboard"
         >
-          Дүрэм
+          My bookings
+        </a>
+        <a
+          className="text-sm font-bold text-tovlo-muted/85 transition hover:text-tovlo-text"
+          href={session?.role === "SUPER_ADMIN" ? "/admin" : "/business"}
+        >
+          {session?.role === "SUPER_ADMIN" ? "Admin" : "Business"}
         </a>
       </nav>
-      <Button className="hidden sm:inline-flex" variant="secondary">
-        Товлох
-      </Button>
+      <div className="flex items-center gap-3">
+        <ThemeToggle />
+        {session ? (
+          <form action={logoutAction}>
+            <Button className="hidden sm:inline-flex" variant="secondary" type="submit">
+              Logout
+            </Button>
+          </form>
+        ) : (
+          <a href="/login">
+            <Button className="hidden sm:inline-flex">Login</Button>
+          </a>
+        )}
+      </div>
     </header>
   );
 }

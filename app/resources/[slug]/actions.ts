@@ -1,7 +1,7 @@
 "use server";
 
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { createPublicBookingRequest } from "@/lib/bookings";
 
 export type BookingRequestState = {
   ok: boolean;
@@ -13,28 +13,55 @@ const phoneRegex = /^(?:\+976\s?)?[0-9]{8}$/;
 const timeRegex = /^([01]\d|2[0-3]):[0-5]\d$/;
 
 const bookingRequestSchema = z.object({
-  resourceSlug: z.string().min(1, "Resource олдсонгүй."),
+  resourceSlug: z.string().min(1, "Resource not found."),
   customerName: z
     .string()
     .trim()
-    .min(2, "Нэрээ 2-оос дээш тэмдэгтээр оруулна уу.")
-    .max(80, "Нэр хэт урт байна."),
+    .min(2, "Enter a name with at least 2 characters.")
+    .max(80, "Name is too long."),
   customerPhone: z
     .string()
     .trim()
-    .regex(phoneRegex, "Утасны дугаараа 8 оронтой эсвэл +976 форматаар оруулна уу."),
-  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Өдрөө зөв сонгоно уу."),
-  startTime: z.string().regex(timeRegex, "Эхлэх цагаа зөв сонгоно уу."),
+    .regex(phoneRegex, "Use an 8 digit phone number or +976 format."),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Choose a valid date."),
+  startTime: z.string().regex(timeRegex, "Choose a valid start time."),
   durationHours: z.coerce
     .number()
-    .int("Үргэлжлэх цаг бүхэл тоо байна.")
-    .min(1, "Доод тал нь 1 цаг байна.")
-    .max(6, "Одоогоор 6 цагаас урт хүсэлт авахгүй."),
-  note: z.string().trim().max(300, "Тэмдэглэл 300 тэмдэгтээс ихгүй байна.").optional(),
+    .int("Duration must be a whole number.")
+    .min(1, "Minimum duration is 1 hour.")
+    .max(6, "MVP requests are limited to 6 hours."),
+  note: z.string().trim().max(300, "Note must be 300 characters or less.").optional(),
 });
 
 function createUlaanbaatarDate(date: string, time: string) {
   return new Date(`${date}T${time}:00+08:00`);
+}
+
+function getBookingRequestErrorMessage(
+  reason:
+    | "CONFIRMED_OVERLAP"
+    | "INVALID_INTERVAL"
+    | "OUTSIDE_BRANCH_HOURS"
+    | "RESOURCE_UNAVAILABLE"
+    | "START_IN_PAST",
+) {
+  if (reason === "CONFIRMED_OVERLAP") {
+    return "That time overlaps a confirmed booking. Please choose another slot.";
+  }
+
+  if (reason === "INVALID_INTERVAL") {
+    return "Choose a valid start time and duration.";
+  }
+
+  if (reason === "OUTSIDE_BRANCH_HOURS") {
+    return "That time is outside this branch's booking hours.";
+  }
+
+  if (reason === "START_IN_PAST") {
+    return "Choose a future time for your booking request.";
+  }
+
+  return "This resource is not accepting booking requests right now.";
 }
 
 export async function submitBookingRequest(
@@ -54,25 +81,8 @@ export async function submitBookingRequest(
   if (!parsed.success) {
     return {
       ok: false,
-      message: "Мэдээллээ шалгаад дахин илгээнэ үү.",
+      message: "Check the request details and try again.",
       fieldErrors: parsed.error.flatten().fieldErrors,
-    };
-  }
-
-  const resource = await prisma.resource.findUnique({
-    where: {
-      slug: parsed.data.resourceSlug,
-    },
-    select: {
-      id: true,
-      status: true,
-    },
-  });
-
-  if (!resource || resource.status !== "ACTIVE") {
-    return {
-      ok: false,
-      message: "Энэ өрөөнд одоогоор booking request илгээх боломжгүй байна.",
     };
   }
 
@@ -81,7 +91,7 @@ export async function submitBookingRequest(
   if (Number.isNaN(startTime.getTime())) {
     return {
       ok: false,
-      message: "Сонгосон өдөр, цаг буруу байна.",
+      message: "The selected date or time is invalid.",
     };
   }
 
@@ -91,24 +101,29 @@ export async function submitBookingRequest(
   if (endTime <= startTime) {
     return {
       ok: false,
-      message: "Дуусах цаг эхлэх цагаас хойш байх ёстой.",
+      message: "End time must be after the start time.",
     };
   }
 
-  await prisma.booking.create({
-    data: {
-      resourceId: resource.id,
-      customerName: parsed.data.customerName,
-      customerPhone: parsed.data.customerPhone.replace(/\s/g, ""),
-      startTime,
-      endTime,
-      status: "PENDING",
-      note: parsed.data.note || null,
-    },
+  const result = await createPublicBookingRequest({
+    resourceSlug: parsed.data.resourceSlug,
+    customerName: parsed.data.customerName,
+    customerPhone: parsed.data.customerPhone.replace(/\s/g, ""),
+    startTime,
+    endTime,
+    note: parsed.data.note || null,
   });
+
+  if (!result.ok) {
+    return {
+      ok: false,
+      message: getBookingRequestErrorMessage(result.reason),
+    };
+  }
 
   return {
     ok: true,
-    message: "Booking request амжилттай илгээгдлээ. Байгууллага баталгаажуулах хүртэл PENDING төлөвтэй байна.",
+    message:
+      "Booking request sent. The business will confirm it before the reservation becomes final.",
   };
 }

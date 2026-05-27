@@ -215,6 +215,7 @@ export async function getBusinessDashboard(owner: MockBusinessOwner) {
         select: {
           resourceId: true,
         },
+        take: 100,
       }),
     ]);
 

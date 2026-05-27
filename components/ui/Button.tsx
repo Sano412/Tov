@@ -25,7 +25,7 @@ export function Button({
   return (
     <button
       className={[
-        "inline-flex min-h-12 items-center justify-center rounded-full px-6 py-3 text-sm font-black transition duration-200 focus:outline-none focus:ring-2 focus:ring-tovlo-yellow/80 focus:ring-offset-2 focus:ring-offset-tovlo-background disabled:cursor-not-allowed disabled:opacity-60",
+        "premium-button inline-flex min-h-12 items-center justify-center rounded-full px-6 py-3 text-sm font-black transition duration-200 focus:outline-none focus:ring-2 focus:ring-tovlo-yellow/80 focus:ring-offset-2 focus:ring-offset-tovlo-background disabled:cursor-not-allowed disabled:opacity-60",
         variantClasses[variant],
         className,
       ].join(" ")}

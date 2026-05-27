@@ -38,6 +38,14 @@ export type PublicResource = {
   };
 };
 
+export type PublicResourceFilters = {
+  district?: string;
+  capacity?: number;
+  maxPrice?: number;
+  features?: string[];
+  limit?: number;
+};
+
 type ResourceWithRelations = {
   id: string;
   slug: string;
@@ -58,6 +66,7 @@ type ResourceWithRelations = {
     bufferMinutes: number;
     business: {
       name: string;
+      status: string;
     };
   };
   category: {
@@ -71,6 +80,17 @@ type ResourceWithRelations = {
 };
 
 const defaultSlots = ["18:00", "19:00", "20:00", "21:00", "22:00", "23:00"];
+const publicResourceLimitMax = 24;
+const featuredResourceLimitMax = 6;
+
+const publicResourceWhere = {
+  status: "ACTIVE",
+  branch: {
+    business: {
+      status: "APPROVED",
+    },
+  },
+};
 
 const resourceInclude = {
   branch: {
@@ -78,6 +98,7 @@ const resourceInclude = {
       business: {
         select: {
           name: true,
+          status: true,
         },
       },
     },
@@ -161,7 +182,7 @@ function mapMockResource(resource: MockResource): PublicResource {
     bookedSlots: resource.bookedSlots,
     branch: {
       name: branch?.name ?? "Tovlo branch",
-      district: branch?.district ?? "Улаанбаатар",
+      district: branch?.district ?? "Ulaanbaatar",
       address: branch?.address ?? "Mock address",
       businessName: business?.name,
     },
@@ -172,28 +193,93 @@ function mapMockResource(resource: MockResource): PublicResource {
   };
 }
 
+function clampLimit(limit: number, max: number) {
+  if (!Number.isFinite(limit)) {
+    return max;
+  }
+
+  return Math.min(Math.max(Math.trunc(limit), 1), max);
+}
+
+function normalizeFeature(feature: string) {
+  return feature.trim().toLowerCase();
+}
+
+function resourceMatchesFilters(resource: PublicResource, filters: PublicResourceFilters) {
+  if (filters.district && resource.branch.district !== filters.district) {
+    return false;
+  }
+
+  if (
+    typeof filters.capacity === "number" &&
+    (filters.capacity < resource.capacityMin || filters.capacity > resource.capacityMax)
+  ) {
+    return false;
+  }
+
+  if (typeof filters.maxPrice === "number" && resource.pricePerHour > filters.maxPrice) {
+    return false;
+  }
+
+  const features = filters.features?.map(normalizeFeature) ?? [];
+
+  if (features.includes("open-now") && !resource.availableNow) {
+    return false;
+  }
+
+  return true;
+}
+
 export async function getFeaturedPublicResources(limit = 6) {
+  const safeLimit = clampLimit(limit, featuredResourceLimitMax);
   const resources = await prisma.resource.findMany({
     where: {
-      status: "ACTIVE",
+      ...publicResourceWhere,
       isFeatured: true,
     },
     include: resourceInclude,
     orderBy: {
       createdAt: "desc",
     },
-    take: limit,
+    take: safeLimit,
   });
 
   return resources.length > 0
     ? resources.map(mapDbResource)
-    : mockResources.slice(0, limit).map(mapMockResource);
+    : mockResources.slice(0, safeLimit).map(mapMockResource);
 }
 
-export async function getPublicResources(limit = 24) {
+export async function getPublicResources(filtersOrLimit: PublicResourceFilters | number = 24) {
+  const filters =
+    typeof filtersOrLimit === "number" ? { limit: filtersOrLimit } : filtersOrLimit;
+  const safeLimit = clampLimit(filters.limit ?? 24, publicResourceLimitMax);
   const resources = await prisma.resource.findMany({
     where: {
-      status: "ACTIVE",
+      ...publicResourceWhere,
+      branch: {
+        district: filters.district,
+        business: {
+          status: "APPROVED",
+        },
+      },
+      capacityMin:
+        typeof filters.capacity === "number"
+          ? {
+              lte: filters.capacity,
+            }
+          : undefined,
+      capacityMax:
+        typeof filters.capacity === "number"
+          ? {
+              gte: filters.capacity,
+            }
+          : undefined,
+      pricePerHour:
+        typeof filters.maxPrice === "number"
+          ? {
+              lte: filters.maxPrice,
+            }
+          : undefined,
     },
     include: resourceInclude,
     orderBy: [
@@ -204,16 +290,24 @@ export async function getPublicResources(limit = 24) {
         createdAt: "desc",
       },
     ],
-    take: limit,
+    take: safeLimit,
   });
 
-  return resources.length > 0
-    ? resources.map(mapDbResource)
-    : mockResources.slice(0, limit).map(mapMockResource);
+  const mappedResources =
+    resources.length > 0
+      ? resources.map(mapDbResource)
+      : mockResources.slice(0, safeLimit).map(mapMockResource);
+
+  return mappedResources.filter((resource) => resourceMatchesFilters(resource, filters));
 }
 
 export async function getPublicDistricts() {
   const branches = await prisma.branch.findMany({
+    where: {
+      business: {
+        status: "APPROVED",
+      },
+    },
     distinct: ["district"],
     orderBy: {
       district: "asc",
@@ -238,8 +332,9 @@ export async function getPublicDistricts() {
 }
 
 export async function getPublicResourceBySlug(slug: string) {
-  const resource = await prisma.resource.findUnique({
+  const resource = await prisma.resource.findFirst({
     where: {
+      ...publicResourceWhere,
       slug,
     },
     include: resourceInclude,
@@ -254,12 +349,13 @@ export async function getPublicResourceBySlug(slug: string) {
 }
 
 export async function getSimilarPublicResources(resource: PublicResource, limit = 3) {
+  const safeLimit = clampLimit(limit, 6);
   const resources = await prisma.resource.findMany({
     where: {
+      ...publicResourceWhere,
       slug: {
         not: resource.slug,
       },
-      status: "ACTIVE",
       category: {
         slug: resource.category.slug,
       },
@@ -268,7 +364,7 @@ export async function getSimilarPublicResources(resource: PublicResource, limit 
     orderBy: {
       isFeatured: "desc",
     },
-    take: limit,
+    take: safeLimit,
   });
 
   if (resources.length > 0) {
@@ -277,12 +373,13 @@ export async function getSimilarPublicResources(resource: PublicResource, limit 
 
   const mockResource = mockResources.find((item) => item.slug === resource.slug);
   return mockResource
-    ? getMockSimilarResources(mockResource).slice(0, limit).map(mapMockResource)
+    ? getMockSimilarResources(mockResource).slice(0, safeLimit).map(mapMockResource)
     : [];
 }
 
 export async function getPublicResourceSlugs() {
   const resources = await prisma.resource.findMany({
+    where: publicResourceWhere,
     select: {
       slug: true,
     },

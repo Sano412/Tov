@@ -1,5 +1,8 @@
 import "server-only";
 
+import { redirect } from "next/navigation";
+import { getCurrentSession } from "@/lib/auth/session";
+
 export type MockBusinessOwner = {
   id: string;
   name: string;
@@ -13,17 +16,29 @@ export type MockSuperAdmin = {
 };
 
 export async function requireBusinessOwner(): Promise<MockBusinessOwner> {
+  const session = await getCurrentSession();
+
+  if (!session || session.role !== "BUSINESS_OWNER" || !session.businessSlug) {
+    redirect(`/login?next=${encodeURIComponent("/business")}`);
+  }
+
   return {
-    id: "mock-owner-amber",
-    name: "Mock Business Owner",
-    businessSlug: "amber-karaoke",
+    id: session.id,
+    name: session.name,
+    businessSlug: session.businessSlug,
   };
 }
 
 export async function requireSuperAdmin(): Promise<MockSuperAdmin> {
+  const session = await getCurrentSession();
+
+  if (!session || session.role !== "SUPER_ADMIN") {
+    redirect(`/login?next=${encodeURIComponent("/admin")}`);
+  }
+
   return {
-    id: "mock-super-admin",
-    name: "Mock Super Admin",
+    id: session.id,
+    name: session.name,
     role: "SUPER_ADMIN",
   };
 }
